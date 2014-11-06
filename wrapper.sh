@@ -17,4 +17,4 @@ echo -n "Press return when you have run 'iperf -s -u $PORT' on $HOST..."
 read BLARGH
 
 echo "Starting UDP flood to $HOST:$PORT via $IFACE."
-./lowpriudp.sh "$IFACE" "$PORT"
+./udpflood.sh "$HOST" "$PORT"
