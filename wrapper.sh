@@ -9,7 +9,7 @@ IFACE=$1; shift
 HOST=$1;  shift
 PORT=$1;  shift
 
-echo -n "Setting up QoS w/ iptables & tc (via sudo)..."
+echo "Setting up QoS w/ iptables & tc (via sudo)..."
 sudo ./lowpriudp.sh "$IFACE" "$PORT"
 echo "done."
 
