@@ -38,7 +38,7 @@ echo done flushing tc
 tc qdisc replace dev wlan2 root pfifo
 
 # create a high-priority class
-tc qdisc replace dev $IFACE root handle 1: htb default 10
+tc qdisc replace dev $IFACE root handle 1: prio bands 2 priomap 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
 
 # udp to $UDPPORT is low-priority
 echo adding filter for $UDPPORT/udp
