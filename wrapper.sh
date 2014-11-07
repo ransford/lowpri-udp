@@ -13,7 +13,7 @@ echo "Setting up QoS w/ iptables & tc (via sudo)..."
 sudo ./lowpriudp.sh "$IFACE" "$PORT"
 echo "done."
 
-echo -n "Press return when you have run 'iperf -s -u $PORT' on $HOST..."
+echo -n "Press return when you have run 'iperf -s -u -p $PORT' on $HOST..."
 read BLARGH
 
 echo "Starting UDP flood to $HOST:$PORT via $IFACE."
