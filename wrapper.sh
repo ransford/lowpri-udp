@@ -18,3 +18,7 @@ read BLARGH
 
 echo "Starting UDP flood to $HOST:$PORT via $IFACE."
 ./udpflood.sh "$HOST" "$PORT"
+
+echo "Statistics from tc:"
+tc -s qdisc ls dev "$IFACE"
+tc -s -p -d class show dev wlan2
