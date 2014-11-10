@@ -21,4 +21,4 @@ echo "Starting UDP flood to $HOST:$PORT via $IFACE."
 
 echo "Statistics from tc:"
 tc -s qdisc ls dev "$IFACE"
-tc -s -p -d class show dev wlan2
+tc -s -p -d class show dev "$IFACE"
