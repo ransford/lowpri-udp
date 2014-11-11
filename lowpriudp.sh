@@ -26,7 +26,7 @@ tc qdisc add dev $IFACE root handle 1: prio
 tc filter add dev $IFACE protocol ip parent 1: prio 1 u32 match ip protocol 1 0xff flowid 1:1
 
 ## tcp: high priority
-#tc filter add dev $IFACE protocol ip parent 1: prio 1 u32 match ip protocol 6 0xff flowid 1:1
+tc filter add dev $IFACE protocol ip parent 1: prio 1 u32 match ip protocol 6 0xff flowid 1:1
 
 # udp blah: low priority
 tc filter add dev $IFACE protocol ip parent 1: prio 1 u32 match ip dport $UDPPORT 0xffff flowid 1:3
