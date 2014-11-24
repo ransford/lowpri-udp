@@ -30,7 +30,7 @@ int main (int argc, char **argv) {
         fprintf(stderr, "Usage: %s", argv[0]);
         for (i = 0; i < NUMHOSTS; ++i)
             fprintf(stderr, " <host #%u>", i+1);
-        fprintf(stderr, "<delay_usec>\n"
+        fprintf(stderr, " <delay_usec>\n"
                 "\tdelay_usec: delay between each set of %u packets\n",
                 NUMHOSTS);
         exit(EXIT_FAILURE);
