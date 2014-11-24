@@ -23,14 +23,21 @@ int main (int argc, char **argv) {
     int retval;
     unsigned i;
     size_t ndata;
+    int interpktdelay;
+    unsigned update_every;
 
-    if (argc != (NUMHOSTS+1)) {
+    if (argc != (NUMHOSTS + 2)) {
         fprintf(stderr, "Usage: %s", argv[0]);
         for (i = 0; i < NUMHOSTS; ++i)
             fprintf(stderr, " <host #%u>", i+1);
-        fprintf(stderr, "\n");
+        fprintf(stderr, "<delay_usec>\n"
+                "\tdelay_usec: delay between each set of %u packets\n",
+                NUMHOSTS);
         exit(EXIT_FAILURE);
     }
+
+    interpktdelay = atoi(argv[NUMHOSTS + 1]);
+    update_every = 200000 / interpktdelay;
 
     bzero(&hints, sizeof(hints));
     hints.ai_family = AF_INET;       /* IPv4 */
@@ -66,11 +73,12 @@ int main (int argc, char **argv) {
                     result[i]->ai_addr, result[i]->ai_addrlen);
         }
 
-        if (!(ndata % 500)) {
-            printf("\r%dB * %d", SENDLEN, ndata);
+        if (!(ndata % update_every)) {
+            printf("\r%dB * %lu", SENDLEN, ndata);
             fflush(stdout);
         }
-        usleep(1000);
+
+        usleep(interpktdelay);
     }
 
     return 0;
