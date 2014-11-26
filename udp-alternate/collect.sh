@@ -8,7 +8,7 @@ IFACES=$*
 PORT=$(grep 'define PORT' udpalt.c | sed -e 's/.* "//' -e 's/"//')
 
 for iface in $IFACES; do
-	sudo tcpdump -i "$iface" -w udp-alt.pcap "udp dst port $PORT" &
+	sudo tcpdump -i "$iface" -w udp-alt-$iface.pcap "udp dst port $PORT" &
 done
 
 echo "When done, run:"
