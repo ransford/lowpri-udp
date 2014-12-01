@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(ggplot2)
 
 # http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
@@ -55,4 +57,11 @@ ds <- summarySE(data=udpalt, measurevar="time_s", groupvars=c("interpkt_us", "if
 p <- ggplot(ds, aes(x=interpkt_us, y=time_s, colour=factor(ifaces))) +
   geom_errorbar(aes(ymin=time_s-se, ymax=time_s+se)) +
   geom_line() +
-  geom_point(data=udpalt, aes(x=interpkt_us, y=time_s, colour=factor(ifaces)))
+  geom_point(data=udpalt, aes(x=interpkt_us, y=time_s, colour=factor(ifaces))) +
+  scale_colour_brewer(name="# interfaces", palette="Set1") +
+  facet_wrap(~distance_m, ncol=2) +
+  ylab('Time to charge harvester to 1.8 V') +
+  xlab('Inter-packet delay')
+
+
+ggsave(p, filename='udpalt.pdf', width=6, height=6, units="in")
