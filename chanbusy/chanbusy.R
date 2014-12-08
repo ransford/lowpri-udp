@@ -8,6 +8,7 @@ csvfile <- args[[1]]
 pdfprefix <- args[[2]]
 
 df <- as.data.frame(read.csv(csvfile))
+summary(df)
 df$n <- seq(length(df[[1]]))
 m <- melt(df, id=c("n"))
 
