@@ -23,7 +23,10 @@ sudo ../chanbusy/chanbusy.py 50 > "${FPREFIX}.occupancy.csv"
 
 ### Run iperf for one minute:
 # last column is throughput; interval is 0.5s; target 10M; UDP
-iperf -c -u -b 10M -t 60 -p "$PORT" -i 0.5 -yc > "${FPREFIX}.throughput.csv"
+TPUTCSV="${FPREFIX}.throughput.csv"
+TPUTINTERVAL=0.5
+echo "tstamp,srcaddr,srcport,dstaddr,dstport,n1,n2,n3,tput" > "$TPUTCSV"
+iperf -c -u -b 10M -t 60 -p "$PORT" -i "$TPUTINTERVAL" -yc >> "$TPUTCSV"
 
 # clean up
 ssh "$OTHERNODE" killall iperf tcpdump
@@ -43,4 +46,4 @@ tcpdump -t 5 -t 3 -r "${FPREFIX}.pcap" 'dst $OTHERNODE' | cut -d' ' -f1,2 | sed 
 ../chanbusy/chanbusy.R "${FPREFIX}.occupancy.csv" "$FPREFIX"
 
 ### Plot throughput vs. time:
-./throughput.R "${FPREFIX}.throughput.csv" "${FPREFIX}.throughput.pdf"
+./throughput.R "${FPREFIX}.throughput.csv" "$TPUTINTERVAL" "${FPREFIX}.throughput.pdf"
