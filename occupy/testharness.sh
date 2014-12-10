@@ -36,7 +36,7 @@ scp "$OTHERNODE":"${FPREFIX}.pcap" .
 # pcap file; plot jitter in R.
 JITCSV="${FPREFIX}.jitter.csv"
 echo "since_prev,since_start" > "$JITCSV"
-tcpdump -t 5 -t 3 -r "${FPREFIX}.pcap" 'dst $OTHERNODE' | cut -d' ' -f1,2 | sed -e 's/ /,/' > "$JITCSV"
+tcpdump -t 5 -t 3 -r "${FPREFIX}.pcap" 'dst $OTHERNODE' | cut -d' ' -f1,2 | sed -e 's/ /,/' >> "$JITCSV"
 ./jitter.R "$JITCSV" "${FPREFIX}.jitter.pdf"
 
 ### Plot occupancy vs. time:
