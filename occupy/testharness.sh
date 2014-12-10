@@ -1,32 +1,46 @@
 #!/bin/sh
 # to be run on AP
 
+PORT=58888 # UDP
+RAND=$(od -N 128 /dev/urandom | shasum | cut -c1-8)
+
 if [ $# -ne 1 ]; then
 	echo "Usage: $0 otherhost" >&2
 	exit 1
 fi
 OTHERNODE=$1; shift
+FPREFIX="${OTHERNODE}-${RAND}"
+
+echo "Experiment ID: ${RAND}"
 
 # start tcpdump to measure jitter later.  note you should make tcpdump setuid
-ssh "$OTHERNODE" '(sudo tcpdump -w foo.pcap "udp port 58888" &) && iperf -u -s -p 58888'
+ssh "$OTHERNODE" "(sudo tcpdump -w ${FPREFIX}.pcap 'udp port ${PORT}' &) && iperf -u -s -p ${PORT}"
 exit 0
 
-# XXX start measuring occupancy using my kernel reading method
+### Measure occupancy vs. time:
+# sample at 50 Hz
+sudo ../chanbusy/chanbusy.py 50 > "${FPREFIX}.occupancy.csv"
 
+### Run iperf for one minute:
 # last column is throughput; interval is 0.5s; target 10M; UDP
-iperf -c -u -b 10M -t 60 -p 58888 -i 0.5 -yc > foo.csv
+iperf -c -u -b 10M -t 60 -p "$PORT" -i 0.5 -yc > "${FPREFIX}.throughput.csv"
 
-ssh "$OTHERNODE" sudo killall iperf tcpdump
+# clean up
+ssh "$OTHERNODE" killall iperf tcpdump
 
-scp "$OTHERNODE":foo.pcap .
+# copy pcap data to here
+scp "$OTHERNODE":"${FPREFIX}.pcap" .
 
+### Plot jitter vs. time:
 # grab "time-since-last-matching-pkt,time-since-start-of-trace" CSV pairs from
-# pcap file
-JITCSV=foo-jitter.csv
+# pcap file; plot jitter in R.
+JITCSV="${FPREFIX}.jitter.csv"
 echo "since_prev,since_start" > "$JITCSV"
-tcpdump -t 5 -t 3 -r foo.pcap 'dst $OTHERNODE' | cut -d' ' -f1,2 | sed -e 's/ /,/' > "$JITCSV"
-./jitter.R "$JITCSV"
+tcpdump -t 5 -t 3 -r "${FPREFIX}.pcap" 'dst $OTHERNODE' | cut -d' ' -f1,2 | sed -e 's/ /,/' > "$JITCSV"
+./jitter.R "$JITCSV" "${FPREFIX}.jitter.pdf"
 
-# XXX generate plot of throughput vs. time
-# XXX generate plot of jitter vs. time
-# XXX generate plot of occupancy vs. time
+### Plot occupancy vs. time:
+../chanbusy/chanbusy.R "${FPREFIX}.occupancy.csv" "$FPREFIX"
+
+### Plot throughput vs. time:
+./throughput.R "${FPREFIX}.throughput.csv" "${FPREFIX}.throughput.pdf"
